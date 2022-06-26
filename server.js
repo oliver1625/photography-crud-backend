@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
@@ -6,6 +7,11 @@ var corsOptions = {
     origin: "http://localhost:3000"
 };
 const ApiRoutes = require('./app/routes/index')
+
+const directory = path.join(__dirname, '/uploads');
+app.use('/uploads', express.static(directory));
+
+
 app.use(cors(corsOptions));
 // parse requests of content-type - application/json
 app.use(bodyParser.json());

@@ -1,5 +1,7 @@
 const bcrypt = require("bcrypt");
 const db = require("../models");
+const jwt = require("jsonwebtoken");
+
 const Tutorial = db.tutorials;
 const User = require('../models/user.model')
 exports.signUp = async (req, res) => {
@@ -34,11 +36,26 @@ exports.signUp = async (req, res) => {
 
         // If the requirement above pass
         // Lets send the response with JWT token in it
+                    
+                    // If the requirement above pass
+        // Lets send the response with JWT token in it
+        const payload = {
+            user: {
+                email: newUser.email,
+            },
+        };
 
-
+        jwt.sign(
+            payload,
+            'IAMOLIVER',
+            { expiresIn: 360000 },
+            (err, token) => {
+                if (err) throw err;
                 res
                     .status(200)
-                    .json({message: "Register success, please fill details of your account."});
+                    .json({message: "Register success, please fill details of your account.", token: token});
+            }
+        );
         } catch (err) {
             console.error(err.message);
             res.status(500).json({message: "Server error"});
@@ -64,9 +81,25 @@ exports.logIn = async (req, res) =>{
         let checkPassword = await bcrypt.compare(password, user.password);
         if (!checkPassword)
             return res.status(422).json({message: "Invalid credentials"});
-                res
-                    .status(200)
-                    .json({data: user});
+
+                    const payload = {
+                        user: {
+                            email: user.email,
+                        },
+                    };
+            
+                    jwt.sign(
+                        payload,
+                        'IAMOLIVER',
+                        { expiresIn: 36000 },
+                        (err, token) => {
+                            if (err) throw err;
+            
+                            res
+                                .status(200)
+                                .json({message: "Login success, please fill details of your account.", token: token});
+                        }
+                    );
 
     } catch (err) {
         console.log(err.message);
